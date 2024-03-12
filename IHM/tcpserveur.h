@@ -16,7 +16,7 @@ private slots:
     void newConnection();
     void AddClient(QTcpSocket *socket);
 private:
-
+    void Send_Message(QTcpSocket* socket, QString msg);
     QTcpServer *TCPServer;
     QList<QTcpSocket*> TCPClients;
 };
