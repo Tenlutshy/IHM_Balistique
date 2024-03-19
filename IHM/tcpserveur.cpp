@@ -50,12 +50,6 @@ void TCPServeur::Send_Message(QTcpSocket *socket, QString msg)
     if(socket){
         if(socket->isOpen()){
             socket->write("hello");
-            /*QDataStream socketstream(socket);
-            socketstream.setVersion(QDataStream::Qt_6_6);
-            QByteArray payload;
-            payload.prepend(msg.toLocal8Bit());
-            qDebug() << "Message send to : " << QString::number(socket->socketDescriptor()) << msg.toLocal8Bit();
-            socketstream << payload;*/
         }else {
             qDebug() << "Socket closed";
         }
