@@ -23,9 +23,9 @@ void TCPServeur::newConnection()
 }
 void TCPServeur::readSocket(){
     QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
-    if (socket->canReadLine()){
-        qDebug() << socket->readAll();
-    }
+
+    qDebug() << socket->readAll();
+    Send_Message(socket, "hello");
 };
 
 void TCPServeur::discardSocket(){
@@ -49,12 +49,13 @@ void TCPServeur::Send_Message(QTcpSocket *socket, QString msg)
 {
     if(socket){
         if(socket->isOpen()){
-            QDataStream socketstream(socket);
+            socket->write("hello");
+            /*QDataStream socketstream(socket);
             socketstream.setVersion(QDataStream::Qt_6_6);
             QByteArray payload;
             payload.prepend(msg.toLocal8Bit());
             qDebug() << "Message send to : " << QString::number(socket->socketDescriptor()) << msg.toLocal8Bit();
-            socketstream << payload;
+            socketstream << payload;*/
         }else {
             qDebug() << "Socket closed";
         }

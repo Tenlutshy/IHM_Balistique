@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -57,11 +58,15 @@ public class uTCPClient : MonoBehaviour
                 if (stream.DataAvailable)
                 {
                     int length;
-                    while ((length = stream.Read(bytes,0, bytes.Length)) != 0)
+                    while ((length = stream.ReadAsync(bytes,0, bytes.Length).Result) != 0)
                     {
                         var data = new byte[length];
+                        Debug.Log(data.GetValue(0));
+
                         Array.Copy(bytes, 0, data, 0, length);
+
                         string msg = Encoding.UTF8.GetString(data);
+                        Debug.Log(data.Count());
                         Debug.Log("Message received : " + msg);
                     }
                 }
