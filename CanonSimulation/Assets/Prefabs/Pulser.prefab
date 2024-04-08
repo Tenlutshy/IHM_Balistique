@@ -119,5 +119,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f70368d4f210c4a9400f80d01a8a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 0}
+  bullet: {fileID: 3942643628565232126, guid: 055282d27c11e65439c89a790d862311, type: 3}
   power: 12

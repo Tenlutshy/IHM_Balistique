@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class uTCPClient : MonoBehaviour
 {
     public string host = "localhost";
     public int port = 8080;
+    public GameObject TrameCoderObject;
+    public TrameCoder trameCoder;
 
     private TcpClient tcpClient;
     private NetworkStream stream;
@@ -19,6 +17,7 @@ public class uTCPClient : MonoBehaviour
 
     void Start()
     {
+        trameCoder = TrameCoderObject.GetComponent<TrameCoder>();
         ConnectToServer();
     }
 
@@ -39,8 +38,6 @@ public class uTCPClient : MonoBehaviour
             tClientReceive = new Thread(new ThreadStart(Listen));
             tClientReceive.IsBackground = true;
             tClientReceive.Start();
-
-            SendMessage("yop");
         }
         catch (SocketException e)
         {
@@ -48,27 +45,58 @@ public class uTCPClient : MonoBehaviour
         }
     }
 
-    private void Listen()
+    private async void Listen()
     {
         try
         {
-            byte[] bytes = new byte[1024];
-            while(true)
+            while (true)
             {
                 if (stream.DataAvailable)
                 {
                     int length;
-                    while ((length = stream.ReadAsync(bytes,0, bytes.Length).Result) != 0)
+
+                    // Get header
+                    byte[] headerBytes = new byte[4];
+                    int dataLength = 0;
+                    
+                    length = stream.ReadAsync(headerBytes, 0, headerBytes.Length).Result;
+                
+                    var data = new byte[length];
+                    Array.Copy(headerBytes, 0, data, 0, length);
+
+                    if (BitConverter.IsLittleEndian)
                     {
-                        var data = new byte[length];
-                        Debug.Log(data.GetValue(0));
-
-                        Array.Copy(bytes, 0, data, 0, length);
-
-                        string msg = Encoding.UTF8.GetString(data);
-                        Debug.Log(data.Count());
-                        Debug.Log("Message received : " + msg);
+                        Array.Reverse(headerBytes);
                     }
+
+                    dataLength = BitConverter.ToInt32(headerBytes, 0);
+                    Debug.Log("Header : " + dataLength);
+
+
+
+
+                    byte[] dataBytes = new byte[dataLength];
+                    int totalBytesRead = 0;
+                    int bytesRead;
+
+
+
+
+                    while (totalBytesRead < dataLength)
+                    {
+                        bytesRead = await stream.ReadAsync(dataBytes, totalBytesRead, dataLength - totalBytesRead);
+
+                        if (bytesRead == 0)
+                        {
+                            // La connexion a été fermée
+                            break;
+                        }
+
+                        totalBytesRead += bytesRead;
+                    }
+
+                    trameCoder.Decode(dataBytes);
+
                 }
             }
         }

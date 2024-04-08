@@ -25,7 +25,6 @@ void TCPServeur::readSocket(){
     QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 
     qDebug() << socket->readAll();
-    Send_Message(socket, "hello");
 };
 
 void TCPServeur::discardSocket(){
@@ -45,11 +44,35 @@ void TCPServeur::AddClient(QTcpSocket *socket){
     qDebug() << "Client connected :" << QString::number(socket->socketDescriptor());
 }
 
-void TCPServeur::Send_Message(QTcpSocket *socket, QString msg)
+void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, QString msg)
 {
+    QTcpSocket *socket = this->TCPClients.value(0);
+
     if(socket){
         if(socket->isOpen()){
-            socket->write("hello");
+
+            QByteArray bPayload;
+            QByteArray bType;
+            bType.append(static_cast<char>(type));
+            bType.resize(1);
+
+            bPayload.append(bType);
+
+            switch (type) {
+            case 1:
+                break;
+            default:
+                break;
+            }
+
+            QByteArray bHeader;
+            bHeader.resize(4);
+            QDataStream streamHeader(&bHeader, QIODevice::WriteOnly);
+            streamHeader << static_cast<quint32>(bPayload.length());
+
+            bPayload.prepend(bHeader);
+            qDebug() << bPayload;
+            socket->write(bPayload);
         }else {
             qDebug() << "Socket closed";
         }
