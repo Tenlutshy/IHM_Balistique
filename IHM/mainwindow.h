@@ -3,6 +3,8 @@
 
 #include "tcpserveur.h"
 #include <QMainWindow>
+#include <QMouseEvent>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,10 +21,14 @@ public:
     ~MainWindow();
     TCPServeur tcp;
 
+    void receiveImpact(QString t);
+    bool eventFilter(QObject *obj, QEvent *event);
 private slots:
     void on_shotBtn_clicked();
 
 private:
     Ui::MainWindow *ui;
+    int touchHeight;
+    int touchWidth;
 };
 #endif // MAINWINDOW_H

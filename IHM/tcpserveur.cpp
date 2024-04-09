@@ -1,4 +1,5 @@
 #include "tcpserveur.h"
+#include "mainwindow.h"
 
 
 TCPServeur::TCPServeur(QObject *parent):QObject(parent){
@@ -24,7 +25,7 @@ void TCPServeur::newConnection()
 void TCPServeur::readSocket(){
     QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 
-    qDebug() << socket->readAll();
+    qobject_cast<MainWindow *>(parent())->receiveImpact(socket->readAll());
 };
 
 void TCPServeur::discardSocket(){
