@@ -9,7 +9,7 @@ class TCPServeur: public QObject
 {
 public:
     TCPServeur(QObject *parent);
-    void Send_Message(/*QTcpSocket* socket, */int type, QString msg = "");
+    void Send_Message(/*QTcpSocket* socket, */int type, int dType = 0, int data = 0);
 private slots:
     void readSocket();
     void discardSocket();

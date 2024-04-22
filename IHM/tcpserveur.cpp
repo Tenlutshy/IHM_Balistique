@@ -45,7 +45,7 @@ void TCPServeur::AddClient(QTcpSocket *socket){
     qDebug() << "Client connected :" << QString::number(socket->socketDescriptor());
 }
 
-void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, QString msg)
+void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, int dtype, int data)
 {
     QTcpSocket *socket = this->TCPClients.value(0);
 
@@ -57,14 +57,23 @@ void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, QString msg)
             bType.append(static_cast<char>(type));
             bType.resize(1);
 
+            QByteArray bDType;
+            QByteArray bData;
+
+            QDataStream streamData(&bData, QIODevice::WriteOnly);
+
             bPayload.append(bType);
 
-            switch (type) {
-            case 1:
-                break;
-            default:
-                break;
-            }
+            bDType.append(static_cast<char>(dtype));
+            bDType.resize(1);
+            bPayload.append(bDType);
+
+
+            streamData << data;
+            //bData.append(static_cast<char>(data));
+            //qDebug() << data;
+            bPayload.append(bData);
+
 
             QByteArray bHeader;
             bHeader.resize(4);

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class Pulser : MonoBehaviour
@@ -11,6 +12,49 @@ public class Pulser : MonoBehaviour
 
     public GameObject bullet;
     public int power = 12;
+    private int _orientation = 0;
+    public int orientation
+    {
+        get
+        {
+            return _orientation;
+        }
+        set
+        {
+            _orientation = value;
+
+            lock (_lock)
+            {
+                _mainThreadActions.Enqueue(() =>
+                {
+
+                    //transform.rotation = Quaternion.AngleAxis(value, Vector3.right);
+
+                    transform.Rotate(value-transform.rotation.eulerAngles.x, 0, 0, Space.Self);
+                });
+            }
+        }
+    }
+    private int _rotation = 0;
+    public int rotation
+    {
+        get
+        {
+            return _rotation;
+        }
+        set
+        {
+            _rotation = value;
+            lock (_lock)
+            {
+                _mainThreadActions.Enqueue(() =>
+                {
+                    this.transform.parent.transform.rotation = Quaternion.AngleAxis(value, Vector3.up);
+                });
+            }
+        }
+    }
+
 
     void Start()
     {
@@ -27,6 +71,16 @@ public class Pulser : MonoBehaviour
                 action?.Invoke();
             }
         }
+
+        var rot = Quaternion.AngleAxis(rotation, Vector3.up);
+        // that's a local direction vector that points in forward direction but also 45 upwards.
+        var lDirection = rot * Vector3.forward;
+
+        Vector3 point_C = Vector3.zero + (lDirection.normalized * power);
+        //Draw the line
+        Debug.DrawLine(Vector3.zero, point_C, Color.blue);
+
+
     }
 
     public void Shot()

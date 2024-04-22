@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WindZoneGO : MonoBehaviour
@@ -10,7 +11,15 @@ public class WindZoneGO : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (!other.gameObject.CompareTag("Bullet") || power == 0) return;
+ 
+        other.gameObject.GetComponent<Rigidbody>().AddForce(direction * power);
+    }
 
-        other.gameObject.GetComponent<Rigidbody>().AddForce(direction * power, ForceMode.Force);
+
+    private void Update()
+    {
+        Vector3 point_C = Vector3.zero+ (direction.normalized * power);
+        //Draw the line
+        Debug.DrawLine(Vector3.zero, point_C, Color.red);
     }
 }
