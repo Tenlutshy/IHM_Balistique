@@ -49,7 +49,7 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Pulser")) return;
+        if (collision.gameObject.CompareTag("Pulser") || collision.gameObject.CompareTag("Impact")) return;
         Debug.Log(collision.contacts[0].point.x + " " + collision.contacts[0].point.y + " " + collision.contacts[0].point.z);
         uTCPClient.SendMessage(collision.contacts[0].point.x + " " + collision.contacts[0].point.y + " " + collision.contacts[0].point.z);
         Destroy(this.gameObject);

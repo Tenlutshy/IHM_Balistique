@@ -6,7 +6,7 @@ TCPServeur::TCPServeur(QObject *parent):QObject(parent){
 
     this->TCPServer = new QTcpServer();
 
-    if(TCPServer->listen(QHostAddress::AnyIPv4, 8080)){
+    if(TCPServer->listen(QHostAddress::AnyIPv4, 8000)){
         connect(TCPServer, &QTcpServer::newConnection,this, &TCPServeur::newConnection);
         qDebug() << "Serveur start on port 8080";
     }

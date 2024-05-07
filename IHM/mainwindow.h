@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QLabel>
+#include <QMap>
+#include <QtSql>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +24,10 @@ public:
     TCPServeur tcp;
 
     QLabel* target = nullptr;
+
+    QMap<int,QLabel> impactLabels;
+
+    QSqlDatabase db;
 
     void receiveImpact(QString t);
     bool eventFilter(QObject *obj, QEvent *event);
@@ -42,5 +48,9 @@ private:
     Ui::MainWindow *ui;
     int touchHeight;
     int touchWidth;
+    int InsertEnv(float wDir, float wPow);
+    int InsertCanon(float dir, float inc, float pow);
+    int InsertImpact(float x, float y, float z);
+    int InsertImpactConfiguration(int canon, int env, int impact);
 };
 #endif // MAINWINDOW_H
