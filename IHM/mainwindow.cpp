@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <iostream>
+#include <QVector3D>
 #include <cmath>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), tcp(this), ui(new Ui::MainWindow)
@@ -183,6 +184,142 @@ QList<int> MainWindow::GetImpactConfiguration(int impact_conf_id){
     return QList{c_dir,c_inc,c_pow,w_dir,w_pow};
 }
 
+
+
+
+
+
+float degreesToRadians(float degrees) {
+    return degrees * M_PI / 180.0f;
+}
+
+QVector3D calculateWindForce(float windAngle, float windForce) {
+    // Convertir l'angle du vent en radians
+    float radians = degreesToRadians(windAngle);
+
+    // Calculer les composantes x et z du vecteur de force du vent en fonction de l'angle
+    float windForceX = windForce * std::cos(radians);
+    float windForceZ = windForce * std::sin(radians);
+
+    return QVector3D(windForceX, 0.0f, windForceZ);
+}
+
+QVector3D calculateCannonForce(float cannonAngle, float directionAngle, float cannonPower) {
+    // Convertir les angles en radians
+    float radiansCannon = degreesToRadians(cannonAngle);
+    float radiansDirection = degreesToRadians(directionAngle);
+
+    // Calculer les composantes x, y et z du vecteur de force du canon
+    float cannonForceX = cannonPower * std::cos(radiansCannon) * std::cos(radiansDirection);
+    float cannonForceY = cannonPower * std::sin(radiansCannon);
+    float cannonForceZ = cannonPower * std::cos(radiansCannon) * std::sin(radiansDirection);
+
+    return QVector3D(cannonForceX, cannonForceY, cannonForceZ);
+}
+
+QVector3D calculateImpactCoordinates(const QVector3D& cannonForce, const QVector3D& windForce, float projectileMass)
+{
+    const float gravity = 9.81f;
+
+    QVector3D initialVelocity = cannonForce / projectileMass;
+
+    float timeOfFlight = (2.0f * initialVelocity.y()) / gravity;   // Prise en compte de la taille a realisé
+
+    QVector3D adjustedWindForce = windForce / gravity;
+
+    QVector3D position = (initialVelocity * timeOfFlight) + adjustedWindForce;
+
+    position.setY(0.0f);
+
+    return position;
+}
+
+
+
+
+
+
+QList<int> adjusteCanon(float x, float z, QVector3D& windForce, float projectileMass){
+    qDebug() << x << " -- " << z;
+    int max_inclinaison = 90;
+    int max_direction = 359;
+    int max_puissance = 30;
+
+    // Boucle direction
+    for (int d=0; d <= max_direction; d++){
+        int direction = d;
+
+        // Boucle inclinaison
+        for (int i=0; i <= max_inclinaison; i++){
+            int inclinaison = i <= 45 ? i+45 : 45-i+45;
+
+            // Boucle puissance
+            for (int p=0; p<= max_puissance; p++){
+                int puissance = p;
+
+                QVector3D previsionImpact = calculateImpactCoordinates(calculateCannonForce(inclinaison, direction, puissance),windForce,projectileMass);
+
+                double epsilon = 1; // Définissez une petite valeur pour la tolérance
+
+                if (fabs(previsionImpact.x() - z) < epsilon && fabs(previsionImpact.z() - x) < epsilon){
+                    qDebug() << direction << " | " << inclinaison << " | " << puissance << " | " << previsionImpact;
+                    return QList{direction,inclinaison, puissance};
+                }
+
+            }
+
+
+        }
+
+    }
+
+    qDebug() << "Pas de solutions trouvé";
+    return QList{0,0,0};
+
+}
+
+
+
+
+
+
+
+
+void MainWindow::UpdateTarget(){
+
+    float rotation = this->ui->canonRotation->value(); // Example rotation angle in degrees
+    float inclinaison = this->ui->canonInclinaison->value(); // Example inclination angle in degrees
+    float power = this->ui->shotPower->value(); // Example power of the shot
+    float wind_direction = this->ui->windDirection->value(); // Example wind direction in degrees
+    float wind_power = this->ui->windPower->value(); // Example wind power
+    float projectile_mass = 1.0f; // Example projectile mass in kg
+
+
+
+    QVector3D fCanon = calculateCannonForce(inclinaison,rotation,power);
+    QVector3D fVent = calculateWindForce(wind_direction,wind_power);
+
+    QVector3D previsionImpact = calculateImpactCoordinates(fCanon,fVent,projectile_mass);
+    qDebug() << previsionImpact;
+
+    float z = previsionImpact.x();
+    float x = previsionImpact.z();
+    qDebug()<<x<<" | "<<z;
+
+    QPoint pImpactCoord = QPoint(x+(this->touchWidth/2),(z-(this->touchHeight/2))*-1);
+    qDebug()<<pImpactCoord;
+
+    if (this->target != nullptr) {
+        // Supprimer l'ancien QLabel
+        this->target->deleteLater();
+    }
+    this->target = new QLabel(ui->touchableZone);
+    this->target->setFixedSize(5, 5);
+    this->target->setStyleSheet("background-color: lightgreen; border-radius: 3px;");
+    this->target->move(pImpactCoord - QPoint(2, 2));
+    this->target->show();
+}
+
 void MainWindow::UpdateImpact(){
     // Get environnement configuration
     int w_pow = this->ui->windPower->value();
@@ -269,72 +406,9 @@ void MainWindow::receiveImpact(QString t)
 
 
 
-struct Vector3D {
-    float x;
-    float y;
-    float z;
-};
-
-Vector3D calculateImpactCoordinates(float rotation, float inclination, float power, float wind_direction, float wind_power, float projectile_mass) {
-    const float gravity = 9.81f; // Gravitational acceleration in m/s^2
-    const float drag_coefficient = 0.5f; // Drag coefficient of the projectile (for simplification)
-    const float time_step = 1.0f; // Time step for simulation in seconds
-
-    // Convert angles to radians
-    float rotation_rad = rotation * M_PI / 180.0f;
-    float inclination_rad = inclination * M_PI / 180.0f;
-    float wind_direction_rad = wind_direction * M_PI / 180.0f;
-
-    // Initialize variables
-    float velocity_x = power * std::cos(inclination_rad) * std::cos(rotation_rad);
-    float velocity_y = power * std::sin(inclination_rad);
-    float velocity_z = power * std::cos(inclination_rad) * std::sin(rotation_rad);
-
-    float position_x = 0.0f;
-    float position_y = 0.0f;
-    float position_z = 0.0f;
-
-    // Simulate projectile motion
-    for (float t = 0; position_y >= 0.0f; t += time_step) {
-        // Calculate wind force at current time
-        float wind_force_x = wind_power * std::cos(wind_direction_rad);
-        float wind_force_z = wind_power * std::sin(wind_direction_rad);
-
-        // Apply wind force to the projectile (impulse mode)
-        float wind_acceleration_x = wind_force_x / projectile_mass;
-        float wind_acceleration_z = wind_force_z / projectile_mass;
-
-        // Update velocity with wind effect
-        velocity_x += wind_acceleration_x * time_step;
-        velocity_z += wind_acceleration_z * time_step;
-
-        // Update position using current velocity
-        position_x += velocity_x * time_step;
-        position_y += velocity_y * time_step;
-        position_z += velocity_z * time_step;
-
-        // Update velocity with gravity effect
-        velocity_y -= gravity * time_step;
-    }
-
-    return {position_x, position_y, position_z};
-}
-
-
-
 void MainWindow::on_shotBtn_clicked()
 {
     tcp.Send_Message(1);
-    float rotation = this->ui->canonRotation->value(); // Example rotation angle in degrees
-    float inclination = this->ui->canonInclinaison->value(); // Example inclination angle in degrees
-    float power = this->ui->shotPower->value(); // Example power of the shot
-    float wind_direction = this->ui->windDirection->value(); // Example wind direction in degrees
-    float wind_power = this->ui->windPower->value(); // Example wind power
-    float projectile_mass = 1.0f; // Example projectile mass in kg
-
-    Vector3D impact_coordinates = calculateImpactCoordinates(rotation, inclination, power, wind_direction, wind_power, projectile_mass);
-
-    std::cout << "Impact coordinates (x, z): (" << impact_coordinates.x << ", " << impact_coordinates.z << ")" << std::endl;
 }
 
 
@@ -356,6 +430,26 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             this->target->move(mouseEvent->pos() - QPoint(2, 2));
             this->target->show();
 
+
+            float wind_direction = this->ui->windDirection->value(); // Example wind direction in degrees
+            float wind_power = this->ui->windPower->value(); // Example wind power
+            float projectile_mass = 1.0f; // Example projectile mass in kg
+            float x = mouseEvent->pos().x()-(this->touchWidth/2);
+            float z = (mouseEvent->pos().y()-(this->touchHeight/2))*-1;
+
+            QVector3D fVent = calculateWindForce(wind_direction,wind_power);
+
+            QList<int> newCanonConf= adjusteCanon(x,z, fVent, projectile_mass);
+            this->ui->canonRotation->setValue(newCanonConf.value(0));
+            this->ui->canonInclinaison->setValue(newCanonConf.value(1));
+            this->ui->shotPower->setValue(newCanonConf.value(2));
+
+            qDebug() << "New Conf" << newCanonConf;
+
+            //return QList{direction,inclinaison, puissance};
+
+
+
         }
         return true;
     }
@@ -366,6 +460,7 @@ void MainWindow::on_shotPower_valueChanged(int value)
 {
     this->tcp.Send_Message(4,3,value);
     this->ui->te_cpow->setPlainText(QString::number(value));
+    this->UpdateTarget();
 }
 
 
@@ -373,6 +468,7 @@ void MainWindow::on_canonInclinaison_valueChanged(int value)
 {
     this->tcp.Send_Message(4,2,value);
     this->ui->te_cinc->setPlainText(QString::number(value));
+    this->UpdateTarget();
 }
 
 
@@ -380,6 +476,7 @@ void MainWindow::on_canonRotation_valueChanged(int value)
 {
     this->tcp.Send_Message(4,1,value);
     this->ui->te_cdir->setPlainText(QString::number(value));
+    this->UpdateTarget();
 }
 
 
@@ -388,6 +485,7 @@ void MainWindow::on_windPower_valueChanged(int value)
     this->tcp.Send_Message(2,1,value);
     this->UpdateImpact();
     this->ui->te_wpow->setPlainText(QString::number(value));
+    this->UpdateTarget();
 }
 
 
@@ -396,5 +494,6 @@ void MainWindow::on_windDirection_valueChanged(int value)
     this->tcp.Send_Message(2,2,value);
     this->UpdateImpact();
     this->ui->te_wdir->setPlainText(QString::number(value));
+    this->UpdateTarget();
 }
 

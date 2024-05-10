@@ -14,7 +14,6 @@ public class WindZoneGO : MonoBehaviour
 
         Debug.Log("yop");
         StartCoroutine(ApplyWind(other.gameObject));
-        //other.gameObject.GetComponent<Rigidbody>().AddForce(direction * power);
     }
 
     private IEnumerator ApplyWind(GameObject rb)

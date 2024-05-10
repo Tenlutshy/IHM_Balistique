@@ -15,9 +15,9 @@ public class WorldManager : MonoBehaviour
 
         Vector3 initialVelocity = cannonForce / projectileMass;
 
-        float timeOfFlight = (2.0f * initialVelocity.y) / gravity;
+        float timeOfFlight = (2.0f * initialVelocity.y) / gravity;    // TODOO Prise en compte de la taille
 
-        windForce = windForce/gravity;
+        windForce = (windForce/projectileMass)/gravity;
 
 
         Vector3 position = (initialVelocity * timeOfFlight) + windForce;

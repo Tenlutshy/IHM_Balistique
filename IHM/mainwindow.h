@@ -55,5 +55,6 @@ private:
     int InsertImpactConfiguration(int canon, int env, int impact);
     QList<int> GetImpactConfiguration(int impact_conf_id);
     void UpdateImpact();
+    void UpdateTarget();
 };
 #endif // MAINWINDOW_H
