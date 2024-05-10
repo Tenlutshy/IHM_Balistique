@@ -75,7 +75,7 @@ public class TrameCoder : MonoBehaviour
                         if (BitConverter.IsLittleEndian)
                             Array.Reverse(data);
 
-                        var rot = Quaternion.AngleAxis(BitConverter.ToInt32(data)-90, Vector3.up);
+                        var rot = Quaternion.AngleAxis(BitConverter.ToInt32(data), Vector3.up);
                         // that's a local direction vector that points in forward direction but also 45 upwards.
                         var lDirection = rot * Vector3.forward;
                         windZone.direction = lDirection;

@@ -192,6 +192,36 @@ border-radius: 150;</string>
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QTextEdit" name="te_cdir">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>150</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="te_cpow">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>290</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="te_cinc">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>290</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">
@@ -282,7 +312,7 @@ border-radius: 150;</string>
       <set>Qt::ImhNone</set>
      </property>
      <property name="maximum">
-      <number>10</number>
+      <number>50</number>
      </property>
      <property name="tracking">
       <bool>true</bool>
@@ -295,6 +325,26 @@ border-radius: 150;</string>
      </property>
      <property name="tickPosition">
       <enum>QSlider::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="te_wpow">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>60</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="te_wdir">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>80</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
      </property>
     </widget>
    </widget>

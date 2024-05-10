@@ -8,11 +8,23 @@ public class WindZoneGO : MonoBehaviour
     public Vector3 direction = Vector3.zero;
     public float power = 0;
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (!other.gameObject.CompareTag("Bullet") || power == 0) return;
- 
-        other.gameObject.GetComponent<Rigidbody>().AddForce(direction * power);
+
+        Debug.Log("yop");
+        StartCoroutine(ApplyWind(other.gameObject));
+        //other.gameObject.GetComponent<Rigidbody>().AddForce(direction * power);
+    }
+
+    private IEnumerator ApplyWind(GameObject rb)
+    {
+
+        if(rb.IsDestroyed()) yield break;
+        
+        rb.GetComponent<Rigidbody>().AddForce(direction * power);
+        yield return new WaitForSeconds(1);
+        StartCoroutine(ApplyWind(rb));
     }
 
 

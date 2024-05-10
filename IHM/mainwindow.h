@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QLabel>
+#include <QPushButton>
 #include <QMap>
 #include <QtSql>
 
@@ -25,7 +26,7 @@ public:
 
     QLabel* target = nullptr;
 
-    QMap<int,QLabel> impactLabels;
+    QMap<int,QPushButton*> impactButtons;
 
     QSqlDatabase db;
 
@@ -52,5 +53,7 @@ private:
     int InsertCanon(float dir, float inc, float pow);
     int InsertImpact(float x, float y, float z);
     int InsertImpactConfiguration(int canon, int env, int impact);
+    QList<int> GetImpactConfiguration(int impact_conf_id);
+    void UpdateImpact();
 };
 #endif // MAINWINDOW_H

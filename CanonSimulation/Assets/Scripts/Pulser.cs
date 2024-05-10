@@ -11,6 +11,7 @@ public class Pulser : MonoBehaviour
     private readonly Queue<Action> _mainThreadActions = new Queue<Action>();
 
     public GameObject bullet;
+    public Vector3 force;
     public int power = 12;
     private int _orientation = 0;
     public int orientation
@@ -73,11 +74,11 @@ public class Pulser : MonoBehaviour
         }
 
         var rot = Quaternion.AngleAxis(rotation, Vector3.up);
-        // that's a local direction vector that points in forward direction but also 45 upwards.
         var lDirection = rot * Vector3.forward;
 
+        force = transform.rotation * Vector3.up * power;
+
         Vector3 point_C = Vector3.zero + (lDirection.normalized * power);
-        //Draw the line
         Debug.DrawLine(Vector3.zero, point_C, Color.blue);
 
 

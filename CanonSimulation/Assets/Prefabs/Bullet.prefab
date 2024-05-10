@@ -147,3 +147,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impact: {fileID: 5383084182782308656, guid: f3d33d5008326b24d817da1dc63492f7, type: 3}
+  WorldManager: {fileID: 0}
+  uTCPClient: {fileID: 0}
