@@ -17,6 +17,7 @@ public:
     int InsertCanon(float dir, float inc, float pow);
     int InsertImpactConfiguration(int canon, int env, int impact);
     QList<int> GetImpactConfiguration(int impact_conf_id);
+    void RemoveImpactConfig(int impactConfId);
 
 private:
 };

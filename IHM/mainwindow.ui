@@ -452,6 +452,52 @@ QCheckBox::indicator:checked {
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="btn_sprimp">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(57, 57, 57);
+    color: white; /* Couleur du texte rouge */
+    padding: 5px 10px; /* Rembourrage */
+    font-weight: bold; 
+	border: none;
+}
+
+QPushButton::hover {
+	background-color: rgb(45, 45, 45);
+}
+
+QPushButton::pressed {
+	background-color: #D08821;
+	color: rgb(45, 45, 45);
+}</string>
+     </property>
+     <property name="text">
+      <string>Supprimer</string>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">

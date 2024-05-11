@@ -164,3 +164,10 @@ QList<int> DatabaseManager::GetImpactConfiguration(int impact_conf_id){
 
     return QList{c_dir,c_inc,c_pow,w_dir,w_pow};
 }
+
+void DatabaseManager::RemoveImpactConfig(int impactConfId){
+    QSqlQuery qryRemoveImpactConfig;
+    qryRemoveImpactConfig.prepare("DELETE FROM ImpactConfiguration WHERE id=:ii");
+    qryRemoveImpactConfig.bindValue(":ii",impactConfId);
+    qryRemoveImpactConfig.exec();
+};

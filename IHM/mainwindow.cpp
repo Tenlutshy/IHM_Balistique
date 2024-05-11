@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), tcp(this), db_manager(this), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->btn_sprimp->setVisible(false);
+
     ui->touchableZone->installEventFilter(this);
     this->touchHeight = ui->touchableZone->size().height();
     this->touchWidth = ui->touchableZone->size().width();
@@ -27,6 +30,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::UpdateTarget(){
+
+    this->ui->btn_sprimp->setEnabled(false);
+    this->ui->btn_sprimp->setVisible(false);
 
     float rotation = this->ui->canonRotation->value();
     float inclinaison = this->ui->canonInclinaison->value();
@@ -62,7 +68,6 @@ void MainWindow::UpdateTarget(){
 }
 
 void MainWindow::UpdateImpact(){
-
 
     foreach (QPushButton *btn, this->impactButtons.values()) {
         btn->deleteLater();
@@ -120,6 +125,12 @@ void MainWindow::UpdateImpact(){
 
                     this->ui->windPower->setValue(configuration.value(4));
                     this->ui->windDirection->setValue(configuration.value(3));
+
+                    this->currentImpactSelect = conf_id;
+
+
+                    this->ui->btn_sprimp->setEnabled(true);
+                    this->ui->btn_sprimp->setVisible(true);
                 });
             }
         }
@@ -229,5 +240,13 @@ void MainWindow::on_windDirection_valueChanged(int value)
 void MainWindow::on_cb_impact_stateChanged(int arg1)
 {
     this->UpdateImpact();
+}
+
+
+void MainWindow::on_btn_sprimp_clicked()
+{
+    this->db_manager.RemoveImpactConfig(this->currentImpactSelect);
+    UpdateTarget();
+    UpdateImpact();
 }
 

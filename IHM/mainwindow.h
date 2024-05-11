@@ -50,9 +50,12 @@ private slots:
 
     void on_cb_impact_stateChanged(int arg1);
 
+    void on_btn_sprimp_clicked();
+
 private:
     Ui::MainWindow *ui;
     int touchHeight;
     int touchWidth;
+    int currentImpactSelect;
 };
 #endif // MAINWINDOW_H
