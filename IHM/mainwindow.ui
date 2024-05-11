@@ -382,6 +382,76 @@ QSpinBox::down-button {
       <number>90</number>
      </property>
     </widget>
+    <widget class="QCheckBox" name="cb_impact">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>30</y>
+       <width>78</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox {
+    background-color: transparent; /* Fond transparent */
+}
+
+/* Style de la QCheckBox non cochée */
+QCheckBox::indicator {
+	background-color: rgb(86, 86, 86);
+	color: white;
+	border-radius:3px;
+}
+
+/* Style de la QCheckBox cochée */
+QCheckBox::indicator:checked {
+	background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:1.071, fx:0.5, fy:0.5, stop:0 rgba(208, 136, 33, 255), stop:1 rgba(171, 55, 46, 255));
+	color: white;
+	border-radius:3px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Impacts</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cb_tts">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>10</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox {
+    background-color: transparent; /* Fond transparent */
+}
+
+/* Style de la QCheckBox non cochée */
+QCheckBox::indicator {
+	background-color: rgb(86, 86, 86);
+	color: white;
+	border-radius:3px;
+}
+
+/* Style de la QCheckBox cochée */
+QCheckBox::indicator:checked {
+	background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:1.071, fx:0.5, fy:0.5, stop:0 rgba(208, 136, 33, 255), stop:1 rgba(171, 55, 46, 255));
+	color: white;
+	border-radius:3px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Tap-To-Shot</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">
@@ -727,6 +797,28 @@ QPushButton::pressed {
     </property>
     <property name="text">
      <string>Pensé et réalisé par MACE Léo</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_info">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>459</y>
+      <width>291</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(170, 170, 170);</string>
+    </property>
+    <property name="text">
+     <string>- - -</string>
     </property>
    </widget>
   </widget>

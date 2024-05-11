@@ -1,0 +1,24 @@
+#ifndef DATABASEMANAGER_H
+#define DATABASEMANAGER_H
+
+#include <QMap>
+#include <QtSql>
+
+class DatabaseManager: public QObject
+{
+public:
+    DatabaseManager(QObject *parent);
+
+    QSqlDatabase db;
+
+    void init();
+    int InsertImpact(float x, float y, float z);
+    int InsertEnv(float wDir, float wPow);
+    int InsertCanon(float dir, float inc, float pow);
+    int InsertImpactConfiguration(int canon, int env, int impact);
+    QList<int> GetImpactConfiguration(int impact_conf_id);
+
+private:
+};
+
+#endif // DATABASEMANAGER_H

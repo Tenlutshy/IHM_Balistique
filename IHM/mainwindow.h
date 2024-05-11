@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "tcpserveur.h"
+#include "databasemanager.h"
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QLabel>
@@ -26,12 +27,14 @@ public:
 
     QLabel* target = nullptr;
 
-    QMap<int,QPushButton*> impactButtons;
+    QMap<int,QPushButton*> impactButtons = QMap<int,QPushButton*>();
 
-    QSqlDatabase db;
+    DatabaseManager db_manager;
 
     void receiveImpact(QString t);
     bool eventFilter(QObject *obj, QEvent *event);
+    void UpdateImpact();
+    void UpdateTarget();
 private slots:
     void on_shotBtn_clicked();
 
@@ -45,16 +48,11 @@ private slots:
 
     void on_windDirection_valueChanged(int value);
 
+    void on_cb_impact_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     int touchHeight;
     int touchWidth;
-    int InsertEnv(float wDir, float wPow);
-    int InsertCanon(float dir, float inc, float pow);
-    int InsertImpact(float x, float y, float z);
-    int InsertImpactConfiguration(int canon, int env, int impact);
-    QList<int> GetImpactConfiguration(int impact_conf_id);
-    void UpdateImpact();
-    void UpdateTarget();
 };
 #endif // MAINWINDOW_H
