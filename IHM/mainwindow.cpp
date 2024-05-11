@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->touchHeight = ui->touchableZone->size().height();
     this->touchWidth = ui->touchableZone->size().width();
     QLabel *canonVisualisation = new QLabel(ui->touchableZone);
+    canonVisualisation->setObjectName("canonVisualisation");
     canonVisualisation->setFixedSize(10, 10);
     canonVisualisation->setStyleSheet("background-color: black; border-radius: 5px;");
     canonVisualisation->move(QPoint(touchHeight/2, touchWidth/2) - QPoint(5, 5));
@@ -314,6 +315,7 @@ void MainWindow::UpdateTarget(){
         this->target->deleteLater();
     }
     this->target = new QLabel(ui->touchableZone);
+    this->target->setObjectName("target");
     this->target->setFixedSize(5, 5);
     this->target->setStyleSheet("background-color: lightgreen; border-radius: 3px;");
     this->target->move(pImpactCoord - QPoint(2, 2));
@@ -459,7 +461,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::on_shotPower_valueChanged(int value)
 {
     this->tcp.Send_Message(4,3,value);
-    this->ui->te_cpow->setPlainText(QString::number(value));
+    this->ui->te_cpow->setValue(value);
     this->UpdateTarget();
 }
 
@@ -467,7 +469,7 @@ void MainWindow::on_shotPower_valueChanged(int value)
 void MainWindow::on_canonInclinaison_valueChanged(int value)
 {
     this->tcp.Send_Message(4,2,value);
-    this->ui->te_cinc->setPlainText(QString::number(value));
+    this->ui->te_cinc->setValue(value);
     this->UpdateTarget();
 }
 
@@ -475,7 +477,7 @@ void MainWindow::on_canonInclinaison_valueChanged(int value)
 void MainWindow::on_canonRotation_valueChanged(int value)
 {
     this->tcp.Send_Message(4,1,value);
-    this->ui->te_cdir->setPlainText(QString::number(value));
+    this->ui->te_cdir->setValue(value);
     this->UpdateTarget();
 }
 
@@ -484,7 +486,7 @@ void MainWindow::on_windPower_valueChanged(int value)
 {
     this->tcp.Send_Message(2,1,value);
     this->UpdateImpact();
-    this->ui->te_wpow->setPlainText(QString::number(value));
+    this->ui->te_wpow->setValue(value);
     this->UpdateTarget();
 }
 
@@ -493,7 +495,7 @@ void MainWindow::on_windDirection_valueChanged(int value)
 {
     this->tcp.Send_Message(2,2,value);
     this->UpdateImpact();
-    this->ui->te_wdir->setPlainText(QString::number(value));
+    this->ui->te_wdir->setValue(value);
     this->UpdateTarget();
 }
 
