@@ -39,7 +39,7 @@ void MainWindow::UpdateTarget(){
     float power = this->ui->shotPower->value();
     float wind_direction = this->ui->windDirection->value();
     float wind_power = this->ui->windPower->value();
-    float projectile_mass = 1.0f;
+    float projectile_mass = this->ui->projPoids->value();
 
 
     QVector3D fCanon = Prevision::calculateCannonForce(inclinaison,rotation,power);
@@ -79,59 +79,76 @@ void MainWindow::UpdateImpact(){
     int w_pow = this->ui->windPower->value();
     int w_direction = this->ui->windDirection->value();
 
+    int b_poids = this->ui->projPoids->value();
+
     QSqlQuery qrySelectEnv;
     qrySelectEnv.prepare("SELECT id FROM Environnement WHERE wind_direction=:wd AND wind_power=:wp");
     qrySelectEnv.bindValue(":wd",w_direction);
     qrySelectEnv.bindValue(":wp",w_pow);
     qrySelectEnv.exec();
 
+    QSqlQuery qrySelectBullet;
+    qrySelectBullet.prepare("SELECT id FROM Bullet WHERE poids=:pd");
+    qrySelectBullet.bindValue(":pd",b_poids);
+
     if(qrySelectEnv.next()){
-        QSqlQuery qrySelectImpactConfig;
-        qrySelectImpactConfig.prepare("SELECT id, impact_id FROM ImpactConfiguration WHERE env_id=:ei");
-        qrySelectImpactConfig.bindValue(":ei", qrySelectEnv.value(0).toInt());
-        qrySelectImpactConfig.exec();
+        int envId = qrySelectEnv.value(0).toInt();
+        qrySelectBullet.exec();
 
-        while(qrySelectImpactConfig.next()){
+        if(qrySelectBullet.next()){
+            int bulletId = qrySelectBullet.value(0).toInt();
+            QSqlQuery qrySelectImpactConfig;
+            qrySelectImpactConfig.prepare("SELECT id, impact_id FROM ImpactConfiguration WHERE env_id=:ei AND bullet_id=:bi");
+            qrySelectImpactConfig.bindValue(":ei", envId);
+            qrySelectImpactConfig.bindValue(":bi", bulletId);
+            if(!qrySelectImpactConfig.exec()){
+                qDebug() << qrySelectImpactConfig.lastError().text();
+            }
 
-            int conf_id = qrySelectImpactConfig.value(0).toInt();
-            int impact_id = qrySelectImpactConfig.value(1).toInt();
+            while(qrySelectImpactConfig.next()){
 
-            QSqlQuery qrySelectImpact;
-            qrySelectImpact.prepare("SELECT x,z FROM Impact WHERE id=:ii");
-            qrySelectImpact.bindValue(":ii",impact_id);
-            qrySelectImpact.exec();
+                int conf_id = qrySelectImpactConfig.value(0).toInt();
+                int impact_id = qrySelectImpactConfig.value(1).toInt();
 
-            if (qrySelectImpact.next()){
+                QSqlQuery qrySelectImpact;
+                qrySelectImpact.prepare("SELECT x,z FROM Impact WHERE id=:ii");
+                qrySelectImpact.bindValue(":ii",impact_id);
+                qrySelectImpact.exec();
 
-                int x = qrySelectImpact.value(0).toInt();
-                int z = qrySelectImpact.value(1).toInt();
+                if (qrySelectImpact.next()){
 
-                QPoint impact = QPoint(x+(this->touchWidth/2),(z-(this->touchHeight/2))*-1);
-                this->impactButtons.insert(conf_id, new QPushButton(ui->touchableZone));
+                    int x = qrySelectImpact.value(0).toInt();
+                    int z = qrySelectImpact.value(1).toInt();
 
-                QPushButton *button = this->impactButtons.value(conf_id);
-                button->setFixedSize(5, 5);
-                button->setStyleSheet("background-color: red; border-radius: 3px;");
-                button->move(impact - QPoint(2, 2));
-                button->show();
-                button->setStyleSheet("QPushButton { background-color: red; border-radius: 3px; }"
-                                      "QPushButton:hover { background-color: blue; }");
+                    QPoint impact = QPoint(x+(this->touchWidth/2),(z-(this->touchHeight/2))*-1);
+                    this->impactButtons.insert(conf_id, new QPushButton(ui->touchableZone));
 
-                connect(button, &QPushButton::clicked, [=]() {
-                    QList<int> configuration = db_manager.GetImpactConfiguration(conf_id);
-                    this->ui->canonInclinaison->setValue(configuration.value(1));
-                    this->ui->canonRotation->setValue(configuration.value(0));
-                    this->ui->shotPower->setValue(configuration.value(2));
+                    QPushButton *button = this->impactButtons.value(conf_id);
+                    button->setFixedSize(5, 5);
+                    button->setStyleSheet("background-color: red; border-radius: 3px;");
+                    button->move(impact - QPoint(2, 2));
+                    button->show();
+                    button->setStyleSheet("QPushButton { background-color: red; border-radius: 3px; }"
+                                          "QPushButton:hover { background-color: blue; }");
 
-                    this->ui->windPower->setValue(configuration.value(4));
-                    this->ui->windDirection->setValue(configuration.value(3));
+                    connect(button, &QPushButton::clicked, [=]() {
+                        QList<int> configuration = db_manager.GetImpactConfiguration(conf_id);
+                        this->ui->canonInclinaison->setValue(configuration.value(1));
+                        this->ui->canonRotation->setValue(configuration.value(0));
+                        this->ui->shotPower->setValue(configuration.value(2));
 
-                    this->currentImpactSelect = conf_id;
+                        this->ui->windPower->setValue(configuration.value(4));
+                        this->ui->windDirection->setValue(configuration.value(3));
+
+                        this->ui->projPoids->setValue(configuration.value(5));
+
+                        this->currentImpactSelect = conf_id;
 
 
-                    this->ui->btn_sprimp->setEnabled(true);
-                    this->ui->btn_sprimp->setVisible(true);
-                });
+                        this->ui->btn_sprimp->setEnabled(true);
+                        this->ui->btn_sprimp->setVisible(true);
+                    });
+                }
             }
         }
     }
@@ -148,7 +165,8 @@ void MainWindow::receiveImpact(QString t)
     int imp_id = db_manager.InsertImpact(x, y, z);
     int env_id = db_manager.InsertEnv(ui->windDirection->value(), ui->windPower->value());
     int can_id = db_manager.InsertCanon(ui->canonRotation->value(), ui->canonInclinaison->value(), ui->shotPower->value());
-    db_manager.InsertImpactConfiguration(can_id,env_id,imp_id);
+    int bul_id = db_manager.InsertBullet(ui->projPoids->value());
+    db_manager.InsertImpactConfiguration(can_id,env_id,imp_id, bul_id);
     this->UpdateImpact();
 }
 
@@ -160,9 +178,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         if (mouseEvent->button() == Qt::LeftButton) {
             qDebug() << "Coordonnées du clic : " << mouseEvent->pos().x()-(this->touchWidth/2) << ", " << (mouseEvent->pos().y()-(this->touchHeight/2))*-1;
 
-            float wind_direction = this->ui->windDirection->value(); // Example wind direction in degrees
-            float wind_power = this->ui->windPower->value(); // Example wind power
-            float projectile_mass = 1.0f; // Example projectile mass in kg
+            float wind_direction = this->ui->windDirection->value();
+            float wind_power = this->ui->windPower->value();
+            float projectile_mass = this->ui->projPoids->value();
             float x = mouseEvent->pos().x()-(this->touchWidth/2);
             float z = (mouseEvent->pos().y()-(this->touchHeight/2))*-1;
 
@@ -181,6 +199,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         return true;
     }
     return QMainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::ModifInfoLabel(QString msg){
+    this->ui->lb_info->setText(msg);
 }
 
 
@@ -248,5 +270,14 @@ void MainWindow::on_btn_sprimp_clicked()
     this->db_manager.RemoveImpactConfig(this->currentImpactSelect);
     UpdateTarget();
     UpdateImpact();
+}
+
+
+void MainWindow::on_projPoids_valueChanged(int value)
+{
+    this->tcp.Send_Message(3,1,value);
+    this->ui->te_projPoids->setValue(value);
+    this->UpdateTarget();
+    this->UpdateImpact();
 }
 

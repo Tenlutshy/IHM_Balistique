@@ -15,11 +15,12 @@ public class WorldManager : MonoBehaviour
 
         Vector3 initialVelocity = cannonForce / projectileMass;
 
-        float timeOfFlight = (2.0f * initialVelocity.y) / gravity;    // TODOO Prise en compte de la taille
+        float timeOfFlight = (2.0f * initialVelocity.y) / gravity;
 
         windForce = (windForce/projectileMass)/gravity;
 
 
+        //Vector3 position = (initialVelocity / timeOfFlight) + windForce;
         Vector3 position = (initialVelocity * timeOfFlight) + windForce;
 
         position.y = 0.0f;
@@ -37,7 +38,7 @@ public class WorldManager : MonoBehaviour
 
         float puissanceVent = windZone.GetComponent<WindZoneGO>().power;
 
-        target.transform.position = CalculateImpactCoordinates(canon.GetComponentInChildren<Pulser>().force, directionVent*puissanceVent, 1.0f);
+        target.transform.position = CalculateImpactCoordinates(canon.GetComponentInChildren<Pulser>().force, directionVent*puissanceVent, canon.GetComponentInChildren<Pulser>().bulletWeidth);
 
         Debug.DrawLine(Vector3.zero, target.transform.position, Color.green);
 

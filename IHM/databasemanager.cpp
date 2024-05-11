@@ -99,21 +99,45 @@ int DatabaseManager::InsertCanon(float dir, float inc, float pow){
     return 0;
 }
 
-int DatabaseManager::InsertImpactConfiguration(int canon, int env, int impact){
+int DatabaseManager::InsertBullet(int weidth){
+    QSqlQuery qrySelectBullet;
+    qrySelectBullet.prepare("SELECT COUNT(*),id FROM Bullet WHERE poids=:pd");
+    qrySelectBullet.bindValue(":pd",weidth);
+    qrySelectBullet.exec();
+    if(qrySelectBullet.next()){
+        if (qrySelectBullet.value(0).toInt() == 0){
+            QSqlQuery qryInsertBullet;
+            qryInsertBullet.prepare("INSERT INTO Bullet (poids) "
+                                   "VALUES (:pd)");
+            qryInsertBullet.bindValue(":pd", weidth);
+            if(!qryInsertBullet.exec()){
+                qDebug() << qryInsertBullet.lastError().text();
+            }
+            return qryInsertBullet.lastInsertId().toInt();
+        }else {
+            return qrySelectBullet.value(1).toInt();
+        }
+    }
+    return 0;
+}
+
+int DatabaseManager::InsertImpactConfiguration(int canon, int env, int impact, int bullet){
     QSqlQuery qrySelectImpactConfiguration;
-    qrySelectImpactConfiguration.prepare("SELECT COUNT(*),id FROM ImpactConfiguration WHERE env_id=:env AND impact_id=:impact AND canon_id=:canon");
+    qrySelectImpactConfiguration.prepare("SELECT COUNT(*),id FROM ImpactConfiguration WHERE env_id=:env AND impact_id=:impact AND canon_id=:canon AND bullet_id=:bullet");
     qrySelectImpactConfiguration.bindValue(":canon",canon);
     qrySelectImpactConfiguration.bindValue(":impact",impact);
     qrySelectImpactConfiguration.bindValue(":env",env);
+    qrySelectImpactConfiguration.bindValue(":bullet",bullet);
     qrySelectImpactConfiguration.exec();
     if(qrySelectImpactConfiguration.next()){
         if (qrySelectImpactConfiguration.value(0).toInt() == 0){
             QSqlQuery qryInsertImpactConfiguration;
-            qryInsertImpactConfiguration.prepare("INSERT INTO ImpactConfiguration (env_id, impact_id, canon_id) "
-                                                 "VALUES (:env, :impact, :canon)");
+            qryInsertImpactConfiguration.prepare("INSERT INTO ImpactConfiguration (env_id, impact_id, canon_id, bullet_id) "
+                                                 "VALUES (:env, :impact, :canon, :bullet)");
             qryInsertImpactConfiguration.bindValue(":canon", canon); // Conversion en entier
             qryInsertImpactConfiguration.bindValue(":impact", impact);
             qryInsertImpactConfiguration.bindValue(":env", env);
+            qryInsertImpactConfiguration.bindValue(":bullet",bullet);
             if(!qryInsertImpactConfiguration.exec()){
                 qDebug() << qryInsertImpactConfiguration.lastError().text();
             }
@@ -134,8 +158,10 @@ QList<int> DatabaseManager::GetImpactConfiguration(int impact_conf_id){
     int w_dir = 0;
     int w_pow = 0;
 
+    int b_poids = 0;
+
     QSqlQuery qrySelectImpactConfiguration;
-    qrySelectImpactConfiguration.prepare("SELECT env_id, canon_id FROM ImpactConfiguration WHERE id=:ici");
+    qrySelectImpactConfiguration.prepare("SELECT env_id, canon_id, bullet_id FROM ImpactConfiguration WHERE id=:ici");
     qrySelectImpactConfiguration.bindValue(":ici",impact_conf_id);
     qrySelectImpactConfiguration.exec();
 
@@ -150,7 +176,6 @@ QList<int> DatabaseManager::GetImpactConfiguration(int impact_conf_id){
             c_pow = qrySelectCanon.value(2).toInt();
         }
 
-
         QSqlQuery qrySelectEnvironnement;
         qrySelectEnvironnement.prepare("SELECT wind_power, wind_direction FROM Environnement WHERE id=:ei");
         qrySelectEnvironnement.bindValue(":ei",qrySelectImpactConfiguration.value(0).toInt());
@@ -160,9 +185,17 @@ QList<int> DatabaseManager::GetImpactConfiguration(int impact_conf_id){
             w_dir = qrySelectEnvironnement.value(1).toInt();
         }
 
+        QSqlQuery qrySelectBullet;
+        qrySelectBullet.prepare("SELECT poids FROM Bullet WHERE id=:bi");
+        qrySelectBullet.bindValue(":bi",qrySelectImpactConfiguration.value(2).toInt());
+        qrySelectBullet.exec();
+        if(qrySelectBullet.next()){
+            b_poids = qrySelectBullet.value(0).toInt();
+        }
+
     }
 
-    return QList{c_dir,c_inc,c_pow,w_dir,w_pow};
+    return QList{c_dir,c_inc,c_pow,w_dir,w_pow,b_poids};
 }
 
 void DatabaseManager::RemoveImpactConfig(int impactConfId){

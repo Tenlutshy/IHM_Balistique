@@ -91,6 +91,35 @@ public class TrameCoder : MonoBehaviour
                 break;
             case 3:
                 Debug.Log("Proj");
+                firstByte = data[0];
+
+                newDataBytes = new byte[data.Length - 1];
+                Array.Copy(data, 1, newDataBytes, 0, newDataBytes.Length);
+
+                data = newDataBytes;
+
+                dtype = firstByte;
+                Debug.Log("Data Type : " + dtype);
+
+                switch (dtype)
+                {
+                    case 1:
+
+                        if (BitConverter.IsLittleEndian)
+                            Array.Reverse(data);
+
+                        try
+                        {
+                            pulser.bulletWeidth = BitConverter.ToInt32(data);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Log(ex);
+                        }
+
+                        break;
+                    default: break;
+                }
                 break;
             case 4:
                 Debug.Log("Canon");

@@ -11,6 +11,7 @@ public class Pulser : MonoBehaviour
     private readonly Queue<Action> _mainThreadActions = new Queue<Action>();
 
     public GameObject bullet;
+    public int bulletWeidth = 1;
     public Vector3 force;
     public int power = 12;
     private int _orientation = 0;
@@ -90,7 +91,9 @@ public class Pulser : MonoBehaviour
         {
             _mainThreadActions.Enqueue(() =>
             {
-                Instantiate(bullet).GetComponent<Rigidbody>().AddForce(transform.rotation * Vector3.up * power, ForceMode.Impulse);
+                Rigidbody blt = Instantiate(bullet).GetComponent<Rigidbody>();
+                blt.mass = bulletWeidth;
+                blt.AddForce(transform.rotation * Vector3.up * power, ForceMode.Impulse);
             });
         }
 

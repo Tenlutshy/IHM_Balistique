@@ -548,6 +548,104 @@ QPushButton::pressed {
       <string>Balistique</string>
      </property>
     </widget>
+    <widget class="QSlider" name="projPoids">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>31</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QSlider::groove:vertical {
+    border: 1px solid #999999; /* Bordure grise */
+    width: 5px; /* Largeur du groove */
+    border-radius: 6px; /* Bordure arrondie */
+}
+/* Couleur non selection */
+QSlider::sub-page:vertical {
+	background-color: rgb(86, 86, 86);
+}
+/*  Couleur selection */
+QSlider::add-page:vertical {
+	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.481, y2:0, stop:0 rgba(171, 55, 46, 255), stop:1 rgba(208, 136, 33, 255));
+}
+
+/* Curseur */
+QSlider::handle:vertical {
+    background-color: #D08821; /* Couleur verte pour le curseur */
+    border: 3px solid white; /* Bordure grise */
+    width: 10px; /* Largeur du curseur */
+	height: 10px;
+    margin: 0 -5px; /* Marge pour centrer le curseur horizontalement */
+    border-radius: 6px; /* Bordure arrondie */
+}</string>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhNone</set>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>5</number>
+     </property>
+     <property name="tracking">
+      <bool>true</bool>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="invertedAppearance">
+      <bool>false</bool>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="te_projPoids">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>140</y>
+       <width>40</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QSpinBox {
+    border: none; /* Supprimer toutes les bordures par défaut */
+    border-bottom: 2px solid; /* Bordure noire en bas */
+	border-color: rgb(86, 86, 86);
+    border-radius: 1px; /* Bordure arrondie */
+    padding: 3px; /* Rembourrage */
+    min-width: 30px; /* Largeur minimale */
+	text-align: center;
+}
+
+/* Style de la QSpinBox lorsqu'elle est sélectionnée */
+QSpinBox:focus {
+    border-bottom: 2px solid #D08821; /* Bordure rouge en bas lors de la sélection */
+}
+
+/* Style de la flèche de montée */
+QSpinBox::up-button {
+    width: 0px; /* Largeur nulle */
+    height: 0px; /* Hauteur nulle */
+}
+
+/* Style de la flèche de descente */
+QSpinBox::down-button {
+    width: 0px; /* Largeur nulle */
+    height: 0px; /* Hauteur nulle */
+}
+</string>
+     </property>
+     <property name="maximum">
+      <number>5</number>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_3">
     <property name="geometry">

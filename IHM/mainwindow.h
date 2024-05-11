@@ -35,6 +35,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *event);
     void UpdateImpact();
     void UpdateTarget();
+    void ModifInfoLabel(QString msg);
 private slots:
     void on_shotBtn_clicked();
 
@@ -51,6 +52,8 @@ private slots:
     void on_cb_impact_stateChanged(int arg1);
 
     void on_btn_sprimp_clicked();
+
+    void on_projPoids_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;

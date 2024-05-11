@@ -20,6 +20,7 @@ void TCPServeur::newConnection()
 {
     while(TCPServer->hasPendingConnections()){
         AddClient(TCPServer->nextPendingConnection());
+        qobject_cast<MainWindow *>(parent())->ModifInfoLabel("Nouveau canon connecté");
     }
 }
 void TCPServeur::readSocket(){
