@@ -1,12 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "prevision.h"
+#include "logger.h"
 #include <QVector3D>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), tcp(this), db_manager(this), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    Logger::writeLog("INFO | Interface lancée");
 
     ui->btn_sprimp->setVisible(false);
 
@@ -65,6 +68,8 @@ void MainWindow::UpdateTarget(){
     this->target->setStyleSheet("background-color: lightgreen; border-radius: 3px;");
     this->target->move(pImpactCoord - QPoint(2, 2));
     this->target->show();
+
+    Logger::writeLog("INFO | Position de la cible modifié " + QString::number(x) + "  ~  " + QString::number(z));
 }
 
 void MainWindow::UpdateImpact(){
@@ -147,6 +152,9 @@ void MainWindow::UpdateImpact(){
 
                         this->ui->btn_sprimp->setEnabled(true);
                         this->ui->btn_sprimp->setVisible(true);
+
+                        Logger::writeLog("INFO | Impact séléctionné " + QString::number(conf_id));
+
                     });
                 }
             }
@@ -167,6 +175,9 @@ void MainWindow::receiveImpact(QString t)
     int can_id = db_manager.InsertCanon(ui->canonRotation->value(), ui->canonInclinaison->value(), ui->shotPower->value());
     int bul_id = db_manager.InsertBullet(ui->projPoids->value());
     db_manager.InsertImpactConfiguration(can_id,env_id,imp_id, bul_id);
+
+
+    Logger::writeLog("INFO | Impact reçu " + QString::number(x) + "  ~  " + QString::number(z));
     this->UpdateImpact();
 }
 
@@ -177,6 +188,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
             qDebug() << "Coordonnées du clic : " << mouseEvent->pos().x()-(this->touchWidth/2) << ", " << (mouseEvent->pos().y()-(this->touchHeight/2))*-1;
+
+            Logger::writeLog("INFO | Clic utilisateur " + QString::number(mouseEvent->pos().x()-(this->touchWidth/2)) + ", " + QString::number((mouseEvent->pos().y()-(this->touchHeight/2))*-1));
 
             float wind_direction = this->ui->windDirection->value();
             float wind_power = this->ui->windPower->value();
@@ -189,7 +202,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             QList<int> newCanonConf= Prevision::adjusteCanon(x,z, fVent, projectile_mass);
 
             if (newCanonConf.value(0) == 1000){
-                this->ui->lb_info->setText("Aucune configuration trouvé :\nCible hors de portée");
+
+                Logger::writeLog("WARNING | Aucune configuration trouvé :\nCible hors de portée");
+                this->ui->lb_info->setText("Aucune configuration trouvé : Cible hors de portée");
             }else {
                 this->ui->canonRotation->setValue(newCanonConf.value(0));
                 this->ui->canonInclinaison->setValue(newCanonConf.value(1));

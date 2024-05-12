@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     databasemanager.cpp \
+    logger.cpp \
     main.cpp \
     mainwindow.cpp \
     prevision.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     databasemanager.h \
+    logger.h \
     mainwindow.h \
     prevision.h \
     settingsmanager.h \

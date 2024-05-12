@@ -1,6 +1,7 @@
 #include "tcpserveur.h"
 #include "mainwindow.h"
 #include "settingsmanager.h"
+#include "logger.h"
 
 TCPServeur::TCPServeur(QObject *parent):QObject(parent){
 
@@ -10,9 +11,10 @@ TCPServeur::TCPServeur(QObject *parent):QObject(parent){
     if(TCPServer->listen(QHostAddress::AnyIPv4, SettingsManager::port.toInt())){
         connect(TCPServer, &QTcpServer::newConnection,this, &TCPServeur::newConnection);
         qDebug() << "Serveur start on port" << SettingsManager::port;
+        Logger::writeLog("INFO | Serveur start on port" + SettingsManager::port);
     }
     else {
-        qDebug() << "Serveur Error" << TCPServer->errorString();
+        Logger::writeLog("ERROR | Serveur Error : " + TCPServer->errorString());
     }
 
 }
@@ -34,6 +36,7 @@ void TCPServeur::discardSocket(){
     QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
     int idx = TCPClients.indexOf(socket);
     if (idx > -1){
+        Logger::writeLog("INFO | Fermeture de connexion " + QString::number(socket->socketDescriptor()));
         TCPClients.removeAt(idx);
     }
 
@@ -42,12 +45,12 @@ void TCPServeur::discardSocket(){
 
 void TCPServeur::AddClient(QTcpSocket *socket){
     this->TCPClients.append(socket);
+    Logger::writeLog("INFO | Nouvelle connexion " + QString::number(socket->socketDescriptor()));
     connect(socket, &QTcpSocket::readyRead, this, &TCPServeur::readSocket);
     connect(socket, &QTcpSocket::disconnected, this, &TCPServeur::discardSocket);
-    qDebug() << "Client connected :" << QString::number(socket->socketDescriptor());
 }
 
-void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, int dtype, int data)
+void TCPServeur::Send_Message(int type, int dtype, int data)
 {
     QTcpSocket *socket = this->TCPClients.value(0);
 
@@ -72,8 +75,6 @@ void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, int dtype, int d
 
 
             streamData << data;
-            //bData.append(static_cast<char>(data));
-            //qDebug() << data;
             bPayload.append(bData);
 
 
@@ -83,12 +84,12 @@ void TCPServeur::Send_Message(/*QTcpSocket *socket, */int type, int dtype, int d
             streamHeader << static_cast<quint32>(bPayload.length());
 
             bPayload.prepend(bHeader);
-            qDebug() << bPayload;
+            Logger::writeLog("INFO | Envoie " + bPayload);
             socket->write(bPayload);
         }else {
-            qDebug() << "Socket closed";
+            Logger::writeLog("WARNING | Envoie impossible connexion fermé");
         }
     }else {
-        qDebug() << "No socket";
+        Logger::writeLog("WARNING | Envoie impossible aucune connexion");
     }
 };
