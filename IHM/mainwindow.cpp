@@ -296,3 +296,39 @@ void MainWindow::on_projPoids_valueChanged(int value)
     this->UpdateImpact();
 }
 
+
+void MainWindow::on_te_cpow_valueChanged(int arg1)
+{
+    this->ui->shotPower->setValue(arg1);
+}
+
+
+void MainWindow::on_te_cdir_valueChanged(int arg1)
+{
+    this->ui->canonRotation->setValue(arg1);
+}
+
+
+void MainWindow::on_te_cinc_valueChanged(int arg1)
+{
+    this->ui->canonInclinaison->setValue(arg1);
+}
+
+
+void MainWindow::on_te_projPoids_valueChanged(int arg1)
+{
+    this->ui->projPoids->setValue(arg1);
+}
+
+
+void MainWindow::on_te_wpow_valueChanged(int arg1)
+{
+    this->ui->windPower->setValue(arg1);
+}
+
+
+void MainWindow::on_te_wdir_valueChanged(int arg1)
+{
+    this->ui->windDirection->setValue(arg1);
+}
+

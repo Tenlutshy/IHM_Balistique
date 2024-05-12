@@ -55,6 +55,18 @@ private slots:
 
     void on_projPoids_valueChanged(int value);
 
+    void on_te_cpow_valueChanged(int arg1);
+
+    void on_te_cdir_valueChanged(int arg1);
+
+    void on_te_cinc_valueChanged(int arg1);
+
+    void on_te_projPoids_valueChanged(int arg1);
+
+    void on_te_wpow_valueChanged(int arg1);
+
+    void on_te_wdir_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     int touchHeight;
