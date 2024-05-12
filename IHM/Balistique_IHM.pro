@@ -13,12 +13,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     prevision.cpp \
+    settingsmanager.cpp \
     tcpserveur.cpp
 
 HEADERS += \
     databasemanager.h \
     mainwindow.h \
     prevision.h \
+    settingsmanager.h \
     tcpserveur.h
 
 FORMS += \
@@ -30,4 +32,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    database.db
+    database.db \
+    settings.ini

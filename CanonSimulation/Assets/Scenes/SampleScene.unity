@@ -573,6 +573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f1c407f0adac047a13397c8c6bbd63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  configFilePath: settings.json
   host: localhost
   port: 8000
   TrameCoderObject: {fileID: 166941592}

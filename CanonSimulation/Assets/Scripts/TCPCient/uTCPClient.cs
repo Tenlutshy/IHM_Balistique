@@ -1,11 +1,21 @@
 using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
 
+public class ConfigData
+{
+    public int Port;
+}
+
 public class uTCPClient : MonoBehaviour
 {
+
+    public string configFilePath = "settings.json";
+    public static ConfigData configData;
+
     public string host = "localhost";
     public int port = 8080;
     public GameObject TrameCoderObject;
@@ -17,6 +27,15 @@ public class uTCPClient : MonoBehaviour
 
     void Start()
     {
+        
+        string json = File.ReadAllText(Application.streamingAssetsPath + "/" + configFilePath);
+        configData = JsonUtility.FromJson<ConfigData>(json);
+
+        Debug.Log("Serveur start on port " + configData.Port);
+        port = configData.Port;
+        
+
+
         trameCoder = TrameCoderObject.GetComponent<TrameCoder>();
         ConnectToServer();
     }

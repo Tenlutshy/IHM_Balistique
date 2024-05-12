@@ -1,14 +1,15 @@
 #include "tcpserveur.h"
 #include "mainwindow.h"
-
+#include "settingsmanager.h"
 
 TCPServeur::TCPServeur(QObject *parent):QObject(parent){
 
     this->TCPServer = new QTcpServer();
 
-    if(TCPServer->listen(QHostAddress::AnyIPv4, 8000)){
+    SettingsManager::loadSettings();
+    if(TCPServer->listen(QHostAddress::AnyIPv4, SettingsManager::port.toInt())){
         connect(TCPServer, &QTcpServer::newConnection,this, &TCPServeur::newConnection);
-        qDebug() << "Serveur start on port 8080";
+        qDebug() << "Serveur start on port" << SettingsManager::port;
     }
     else {
         qDebug() << "Serveur Error" << TCPServer->errorString();
