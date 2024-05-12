@@ -18,8 +18,8 @@
 
 ### Pre-Build
 
-- Accéder au dossier ```exe```
-- Lancer le fichier ```.exe```
+- Accéder au dossier [```ihm_balistique```](../ihm_balistique/)
+- Lancer le fichier [```Balistique_IHM.exe```](../ihm_balistique/Balistique_IHM.exe)
 
 ### Complet
 

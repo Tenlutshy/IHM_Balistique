@@ -1,5 +1,6 @@
 #include "databasemanager.h"
 #include "mainwindow.h"
+#include "logger.h"
 
 DatabaseManager::DatabaseManager(QObject* parent):QObject(parent) {
 }
@@ -9,38 +10,37 @@ void DatabaseManager::init(){
     this->db = QSqlDatabase::addDatabase("QSQLITE");
     this->db.setDatabaseName(databasePath.currentPath()+"/database.db");
 
-    QSqlQuery sqlCreateBullet;
-    sqlCreateBullet.prepare("CREATE TABLE 'Bullet' ( 'id' INTEGER UNIQUE, 'poids' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
-    sqlCreateBullet.exec();
-
-
-    QSqlQuery sqlCreateCanon;
-    sqlCreateCanon.prepare("CREATE TABLE 'Canon' ( 'id' INTEGER UNIQUE, 'direction' INTEGER, 'inclinaison' INTEGER, 'puissance' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
-    sqlCreateCanon.exec();
-
-
-    QSqlQuery sqlCreateEnvironnement;
-    sqlCreateEnvironnement.prepare("CREATE TABLE 'Environnement' ( 'id' INTEGER UNIQUE, 'wind_power' INTEGER, 'wind_direction' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
-    sqlCreateEnvironnement.exec();
-
-
-    QSqlQuery sqlCreateImpact;
-    sqlCreateImpact.prepare("CREATE TABLE 'Impact' ( 'id' INTEGER UNIQUE, 'x' INTEGER, 'y' INTEGER, 'z' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
-    sqlCreateImpact.exec();
-
-
-    QSqlQuery sqlCreateImpactConfiguration;
-    sqlCreateImpactConfiguration.prepare("CREATE TABLE 'ImpactConfiguration' ( 'id' INTEGER UNIQUE, 'env_id' INTEGER, 'impact_id' INTEGER, 'canon_id' INTEGER, bullet_id INTEGER, PRIMARY KEY('id' AUTOINCREMENT), FOREIGN KEY('canon_id') REFERENCES Canon(id), FOREIGN KEY('env_id') REFERENCES Environnement(id), FOREIGN KEY('impact_id') REFERENCES Impact(id), FOREIGN KEY('bullet_id') REFERENCES Bullet(id) )");
-    sqlCreateImpactConfiguration.exec();
-
-
-
     if(db.open()){
-        qDebug() << "DB Connected";
-        qDebug() << this->db.tables();
+        Logger::writeLog("INFO | Base de données connecté");
+
+        QSqlQuery sqlCreateBullet;
+        sqlCreateBullet.prepare("CREATE TABLE IF NOT EXISTS 'Bullet' ( 'id' INTEGER UNIQUE, 'poids' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
+        sqlCreateBullet.exec();
+
+
+
+        QSqlQuery sqlCreateCanon;
+        sqlCreateCanon.prepare("CREATE TABLE IF NOT EXISTS  'Canon' ( 'id' INTEGER UNIQUE, 'direction' INTEGER, 'inclinaison' INTEGER, 'puissance' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
+        sqlCreateCanon.exec();
+
+
+        QSqlQuery sqlCreateEnvironnement;
+        sqlCreateEnvironnement.prepare("CREATE TABLE IF NOT EXISTS  'Environnement' ( 'id' INTEGER UNIQUE, 'wind_power' INTEGER, 'wind_direction' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
+        sqlCreateEnvironnement.exec();
+
+
+        QSqlQuery sqlCreateImpact;
+        sqlCreateImpact.prepare("CREATE TABLE IF NOT EXISTS  'Impact' ( 'id' INTEGER UNIQUE, 'x' INTEGER, 'y' INTEGER, 'z' INTEGER, PRIMARY KEY('id' AUTOINCREMENT) )");
+        sqlCreateImpact.exec();
+
+
+        QSqlQuery sqlCreateImpactConfiguration;
+        sqlCreateImpactConfiguration.prepare("CREATE TABLE IF NOT EXISTS  'ImpactConfiguration' ( 'id' INTEGER UNIQUE, 'env_id' INTEGER, 'impact_id' INTEGER, 'canon_id' INTEGER, bullet_id INTEGER, PRIMARY KEY('id' AUTOINCREMENT), FOREIGN KEY('canon_id') REFERENCES Canon(id), FOREIGN KEY('env_id') REFERENCES Environnement(id), FOREIGN KEY('impact_id') REFERENCES Impact(id), FOREIGN KEY('bullet_id') REFERENCES Bullet(id) )");
+        sqlCreateImpactConfiguration.exec();
+
         qobject_cast<MainWindow *>(parent())->UpdateImpact();
     } else {
-        qDebug() << "Error in DB Connection";
+        Logger::writeLog("ERROR | Erreur lors de la connexion à la base de données");
     }
 }
 
