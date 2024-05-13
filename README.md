@@ -31,11 +31,11 @@ Ce projet est une interface homme machine permettant de prévoir les coordonnée
 | Interface | **Sauvegarde des impacts** | *Enregistrement des configurations d'environnement et du canon à chaque impacts afin de pouvoir les réutiliser.* |
 | Interface | **Prédiction d'impact** | *Prévisualisation de la zone d'impact à l'aide d'un algorithme de prédiction.* |
 | Interface | **Log des interractions** | *Les interractions avec l'interface sont loggé dans un fichier .log.* |
-| Interface | **Fichier configue** | *Possibilité de configurer le port d'écoute TCP/IP depuis un fichier .ini.* |
+| Interface | **Fichier config** | *Possibilité de configurer le port d'écoute TCP/IP depuis un fichier .ini.* |
 | Interface & Simulateur | **Communication TCP/IP** | *Communication entre l'interface et le simulateur à l'aide d'un protocole TCP/IP et un encodage maison permettant le transfert de la configuration du canon, de l'environnement et du projectile.* |
 | Simulateur | **Modification des paramètres de simulation** | *Application des configurations reçu de l'interface afin de simulé le tir de manière réaliste.* |
 | Simulateur | **Affichage des impacts** | *Affichage des impacts dans l'environnement afin de simplifier la visualisation.* |
-| Simulateur | **Fichier configue** | *Possibilité de configurer le port d'écoute TCP/IP depuis un fichier .json.* |
+| Simulateur | **Fichier config** | *Possibilité de configurer le port d'écoute TCP/IP depuis un fichier .json.* |
 
 
 ### Interface
@@ -46,6 +46,6 @@ L'interface est un logiciel réalisé à l'aide de Qt C++. Elle permet à l'util
 
 ### Simulation
 
-Le simulateur est une scène Unity qui communique avec l'interface à l'ai du protocole TCP/IP. Celui-ci va permettre de simuler un tir balistique dans l'environnement configuré sur l'interface et de visualiser les différents points d'impact réalisé durant la session.
+Le simulateur est une scène Unity qui communique avec l'interface à l'aide du protocole TCP/IP. Celui-ci va permettre de simuler un tir balistique dans l'environnement configuré sur l'interface et de visualiser les différents points d'impact réalisé durant la session.
 
 [Installation et utilisation](./CanonSimulation/README.md)
