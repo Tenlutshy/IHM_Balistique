@@ -46,6 +46,6 @@ L'interface est un logiciel réalisé à l'aide de Qt C++. Elle permet à l'util
 
 ### Simulation
 
-Le simulateur est une scène Unity qui communique avec l'interface à l'ai du protocole TCP/IP. Celui-ci va permettre de simuler un tir balistique dans l'environnement configuré sur l'interface et de visualiser les différents points d'impact réalisé durant la session.
+Le simulateur est une scène Unity qui communique avec l'interface à l'aide du protocole TCP/IP. Celui-ci va permettre de simuler un tir balistique dans l'environnement configuré sur l'interface et de visualiser les différents points d'impact réalisé durant la session.
 
 [Installation et utilisation](./CanonSimulation/README.md)
